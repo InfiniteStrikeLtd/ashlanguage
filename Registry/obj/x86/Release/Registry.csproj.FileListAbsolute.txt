@@ -1,0 +1,8 @@
+C:\Users\Draven\Documents\Projects\REGISTRY_Language\Registry\bin\Release\Registry.exe
+C:\Users\Draven\Documents\Projects\REGISTRY_Language\Registry\bin\Release\Registry.pdb
+C:\Users\Draven\Documents\Projects\REGISTRY_Language\Registry\obj\x86\Release\Registry.exe
+C:\Users\Draven\Documents\Projects\REGISTRY_Language\Registry\obj\x86\Release\Registry.pdb
+C:\Users\Draven\Documents\GitHub\ashlanguage\Registry\bin\Release\Registry.exe
+C:\Users\Draven\Documents\GitHub\ashlanguage\Registry\bin\Release\Registry.pdb
+C:\Users\Draven\Documents\GitHub\ashlanguage\Registry\obj\x86\Release\Registry.exe
+C:\Users\Draven\Documents\GitHub\ashlanguage\Registry\obj\x86\Release\Registry.pdb

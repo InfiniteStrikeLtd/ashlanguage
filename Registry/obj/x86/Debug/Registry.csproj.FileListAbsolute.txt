@@ -1,0 +1,4 @@
+C:\Users\Draven\Documents\Projects\REGISTRY_Language\Registry\bin\Debug\Registry.exe
+C:\Users\Draven\Documents\Projects\REGISTRY_Language\Registry\bin\Debug\Registry.pdb
+C:\Users\Draven\Documents\Projects\REGISTRY_Language\Registry\obj\x86\Debug\Registry.exe
+C:\Users\Draven\Documents\Projects\REGISTRY_Language\Registry\obj\x86\Debug\Registry.pdb

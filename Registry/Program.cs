@@ -17,8 +17,11 @@ namespace Registry
 		
 		public static void Main(string[] args){
 
+			
+			
 			Registry.add("pi",""+Math.PI);
 			Registry.add("CURLINE","0");
+			Registry.add("TIME",DateTime.Now + "");
 			Registry.lockvar("pi");
 
 			if (args.Length >= 1) { // we have a .reg file in the stream
@@ -42,6 +45,7 @@ namespace Registry
 					Registry.parseCommand(lines.ToArray()[currentLine]);
 					currentLine++;
 					Registry.add("CURLINE",""+currentLine);
+					Registry.add("TIME",DateTime.Now + "");
 				}
 				
 				// Suspend the screen.
@@ -50,6 +54,7 @@ namespace Registry
 				Console.WriteLine("COPYRIGHT 2016 Infinite Strike.");
 				while(run){
 					Console.Write(">");
+					Registry.add("TIME",DateTime.Now + "");
 					Registry.parseCommand(Console.ReadLine());
 				}
 			}
@@ -68,6 +73,10 @@ namespace Registry
 		private static List<RegistryData> storage = new List<RegistryData>();
 		private static List<string> l_list = new List<string>();
 
+		public static List<RegistryData> getDataList(){
+			return storage;
+		}
+		
 		public static bool lockvar(string key){
 			if (!l_list.Contains (key)) {
 				l_list.Add(key);
@@ -186,7 +195,8 @@ namespace Registry
 			"PRINT", "SET", "GET", "REM",
 			"ADD","##","ARITH","EXIT","READ",
 			"GOTO","ARITH#SIN","ARITH#COS",
-			"ARITH#TAN","ARITH#SQRT","LOCK","UNLOCK"
+			"ARITH#TAN","ARITH#SQRT","LOCK","UNLOCK",
+			"CLEAR","DUMP"
 		};
 
 		public static string[] constants = {
@@ -255,6 +265,10 @@ namespace Registry
 					if (suc == false) {
 						Console.WriteLine("EXECUTION ERROR: Cannot REMOVE {0}: Line "+ Program.line,args[0]);
 					}
+					return;
+				}
+				if (command.ToLower().Trim().Equals("clear")){
+					Console.Clear();
 					return;
 				}
 				if (command.ToLower().Trim().Equals("exit")){
@@ -352,6 +366,12 @@ namespace Registry
 						if (suc == false) {
 							Console.WriteLine("EXECUTION ERROR: Cannot unlock: " + args[1] + ": Line " + Program.line );
 						}
+					}
+				}
+				if (command.ToLower().Trim().Equals("dump")) {
+					for (int i = 0; i < Registry.getDataList().ToArray().Length; i++) {
+						RegistryData d = Registry.getDataList().ToArray()[i];
+						Console.WriteLine("Variable: {0} Value: {1}",d.Key,d.Data);
 					}
 				}
 			}else{

@@ -2,3 +2,8 @@ C:\Users\Draven\Documents\Projects\REGISTRY_Language\Registry\bin\Debug\Registry
 C:\Users\Draven\Documents\Projects\REGISTRY_Language\Registry\bin\Debug\Registry.pdb
 C:\Users\Draven\Documents\Projects\REGISTRY_Language\Registry\obj\x86\Debug\Registry.exe
 C:\Users\Draven\Documents\Projects\REGISTRY_Language\Registry\obj\x86\Debug\Registry.pdb
+C:\Users\17dclewis\Desktop\ashlanguage\Registry\obj\x86\Debug\Registry.csprojResolveAssemblyReference.cache
+C:\Users\17dclewis\Desktop\ashlanguage\Registry\obj\x86\Debug\Registry.exe
+C:\Users\17dclewis\Desktop\ashlanguage\Registry\bin\Debug\Registry.exe
+C:\Users\17dclewis\Desktop\ashlanguage\Registry\bin\Debug\Registry.pdb
+C:\Users\17dclewis\Desktop\ashlanguage\Registry\obj\x86\Debug\Registry.pdb

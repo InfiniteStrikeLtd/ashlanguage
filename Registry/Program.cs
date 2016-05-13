@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-
+using System.IO;
 
 namespace Registry
 {
@@ -12,24 +12,38 @@ namespace Registry
 		public static int line = 1;
 		public static string version = "1.0.5_b1";
 
+		public static int currentLine = 0;
+		public static List<string> lines = new List<string>();
+		
 		public static void Main(string[] args){
 
 			Registry.add("pi",""+Math.PI);
+			Registry.add("CURLINE","0");
 			Registry.lockvar("pi");
 
 			if (args.Length >= 1) { // we have a .reg file in the stream
 
 				string ln;
 
-				// Read the file and display it line by line.
+				// Read the file into the buffer line by line.
+				//Console.WriteLine("Loading File...");
 				System.IO.StreamReader file = new System.IO.StreamReader (args [0]);
 				while ((ln = file.ReadLine ()) != null) {
-					Registry.parseCommand (ln);
-					counter++;
-					line++;
+					lines.Add(ln);
 				}
+				//Console.WriteLine("File Loaded: {0} Lines", lines.ToArray().Length);
 				file.Close ();
 
+				
+				
+				// now we execute.
+				while (currentLine < lines.ToArray().Length) {
+					//Console.WriteLine("Line: {0}",currentLine);
+					Registry.parseCommand(lines.ToArray()[currentLine]);
+					currentLine++;
+					Registry.add("CURLINE",""+currentLine);
+				}
+				
 				// Suspend the screen.
 			} else { // we dont have a file so we will interpret from the command line;
 				Console.WriteLine("REGISTRY Language " + Program.version);
@@ -42,7 +56,7 @@ namespace Registry
 				
 
 			if (args.Length < 2 || args [1] == "false") {
-				Console.WriteLine("Execution Haulted, Press enter to close");
+				Console.WriteLine("Execution Haulted, Press enter to close: EXIT: " + code);
 				Console.ReadLine();
 			}
 
@@ -281,6 +295,11 @@ namespace Registry
 						Registry.add(args[1],arithmatic(xpr[0],"%",xpr[1]));
 						return;
 					}
+					if (args [2].Contains ("^")) {
+						string[] xpr = args [2].Split('^');
+						Registry.add(args[1],arithmatic(xpr[0],"^",xpr[1]));
+						return;
+					}
 				}
 				if (command.ToLower ().Trim ().Equals ("read")) { // READ : var
 					if(args.Length < 1){Console.WriteLine("COMPILATION ERROR: Not Enough Arguments to READ: Line"+ Program.line);}
@@ -306,7 +325,14 @@ namespace Registry
 					Registry.add(args[1],""+Math.Sqrt(double.Parse(regParse(args[2]))));
 				}
 				if (command.ToLower ().Trim ().Equals ("goto")) {
-
+					if (args.Length < 1) {Console.WriteLine("COMPILATION ERROR: Not Enough Arguments to GOTO: Line "+ Program.line);}
+					try{
+						Program.currentLine = int.Parse(args[1]) - 1;
+						//Console.WriteLine(Program.currentLine);
+					} catch (Exception e) {
+						Console.WriteLine("FATAL ERROR: {0} : Line: {1}",e.Message,Program.line);
+					}
+					
 				}
 				if (command.ToLower ().Trim ().Equals ("lock")) {
 					if (!isConstant (args [1])) {
@@ -349,7 +375,9 @@ namespace Registry
 			if (op.Contains ("%")) {
 				return "%";
 			}
-
+			if (op.Contains("^")) {
+				return "^";
+			}
 			return null;
 		}
 
@@ -362,27 +390,34 @@ namespace Registry
 		}
 
 		public static string arithmatic(string x, string op, string y){
+			try{
+				string xx = regParse(x);
+				string yy = regParse(y);
 
-			string xx = regParse(x);
-			string yy = regParse(y);
 
-
-			if (op == "+") {
-				return ""+(Double.Parse(xx) + Double.Parse(yy));
+				if (op == "+") {
+					return ""+(Double.Parse(xx) + Double.Parse(yy));
+				}
+				if (op == "-") {
+					return ""+(Double.Parse(xx) - Double.Parse(yy));
+				}
+				if (op == "*") {
+					return ""+(Double.Parse(xx) * Double.Parse(yy));
+				}
+				if (op == "/") {
+					return ""+(Double.Parse(xx) / Double.Parse(yy));
+				}
+				if (op == "%") {
+					return ""+(Double.Parse(xx) % Double.Parse(yy));
+				}
+				if (op == "^") {
+					return ""+(Math.Pow(Double.Parse(xx),Double.Parse(yy)));
+				}
+				return ""+0;
+			}catch(Exception e){
+				Console.WriteLine("FATAL ERROR: {0} Line: {1}",e.Message,Program.line);
+				return ""+(0);
 			}
-			if (op == "-") {
-				return ""+(Double.Parse(xx) - Double.Parse(yy));
-			}
-			if (op == "*") {
-				return ""+(Double.Parse(xx) * Double.Parse(yy));
-			}
-			if (op == "/") {
-				return ""+(Double.Parse(xx) / Double.Parse(yy));
-			}
-			if (op == "%") {
-				return ""+(Double.Parse(xx) % Double.Parse(yy));
-			}
-			return ""+0;
 		}
 
 		private static string arrayToChars(string[] args){

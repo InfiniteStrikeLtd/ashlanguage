@@ -56,10 +56,16 @@ UNLOCK : name
 * 13 ARITH#SQRT : var val - set var to value of sqrt(val)
 * 14 LOCK : var - make a var a constant
 * 15 UNLOCK : var - unmake a var a constant
+* 16 GOTO : location - goto the line in the file and continue execution from there
+* 17 RAND : var - store a random number to a var
 
-### Language constants
+### Language constants and usable values
 
 * 1 pi - constant equal to 3.1415
+* 2 TIME - current time
+* 3 CURLINE - current line
+* 4 SYSTIME - miliseconds that have passed since execution'
+
 
 # If you want to help
 

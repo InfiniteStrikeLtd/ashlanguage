@@ -22,6 +22,7 @@ namespace Registry
 			Registry.add("pi",""+Math.PI);
 			Registry.add("CURLINE","0");
 			Registry.add("TIME",DateTime.Now + "");
+			Registry.add("SYSTIME",DateTime.Now.Millisecond + "");
 			Registry.lockvar("pi");
 
 			if (args.Length >= 1) { // we have a .reg file in the stream
@@ -46,6 +47,7 @@ namespace Registry
 					currentLine++;
 					Registry.add("CURLINE",""+currentLine);
 					Registry.add("TIME",DateTime.Now + "");
+					Registry.add("SYSTIME",DateTime.Now.Millisecond + "");
 				}
 				
 				// Suspend the screen.
@@ -55,6 +57,7 @@ namespace Registry
 				while(run){
 					Console.Write(">");
 					Registry.add("TIME",DateTime.Now + "");
+					Registry.add("SYSTIME",DateTime.Now.Millisecond + "");
 					Registry.parseCommand(Console.ReadLine());
 				}
 			}
@@ -196,7 +199,7 @@ namespace Registry
 			"ADD","##","ARITH","EXIT","READ",
 			"GOTO","ARITH#SIN","ARITH#COS",
 			"ARITH#TAN","ARITH#SQRT","LOCK","UNLOCK",
-			"CLEAR","DUMP"
+			"CLEAR","DUMP","RAND"
 		};
 
 		public static string[] constants = {
@@ -373,6 +376,13 @@ namespace Registry
 						RegistryData d = Registry.getDataList().ToArray()[i];
 						Console.WriteLine("Variable: {0} Value: {1}",d.Key,d.Data);
 					}
+				}
+				if (command.ToLower().Trim().Equals("rand")) {
+					if (args.Length < 1) {
+						Console.WriteLine("COMPILATION ERROR: Not Enough Arguments to RAND: Line " + Program.line);
+						return;
+					}
+					Registry.add(args[1],new Random().Next()+"");
 				}
 			}else{
 				Console.WriteLine("COMPILATION ERROR: Unknown command {0}: Line "+ Program.line,command);

@@ -1,10 +1,11 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 
 namespace Registry
 {
-	public class Program{
+	public class Program
+	{
 
 		public static bool run = true;
 		public static int counter = 0;
@@ -13,17 +14,18 @@ namespace Registry
 		public static string version = "1.0.5_b1";
 
 		public static int currentLine = 0;
-		public static List<string> lines = new List<string>();
-		
-		public static void Main(string[] args){
+		public static List<string> lines = new List<string> ();
+
+		public static void Main (string[] args)
+		{
 
 			
 			
-			Registry.add("pi",""+Math.PI);
-			Registry.add("CURLINE","0");
-			Registry.add("TIME",DateTime.Now + "");
-			Registry.add("SYSTIME",DateTime.Now.Millisecond + "");
-			Registry.lockvar("pi");
+			Registry.add ("pi", "" + Math.PI);
+			Registry.add ("CURLINE", "0");
+			Registry.add ("TIME", DateTime.Now + "");
+			Registry.add ("SYSTIME", DateTime.Now.Millisecond + "");
+			Registry.lockvar ("pi");
 
 			if (args.Length >= 1) { // we have a .reg file in the stream
 
@@ -33,7 +35,7 @@ namespace Registry
 				//Console.WriteLine("Loading File...");
 				System.IO.StreamReader file = new System.IO.StreamReader (args [0]);
 				while ((ln = file.ReadLine ()) != null) {
-					lines.Add(ln);
+					lines.Add (ln);
 				}
 				//Console.WriteLine("File Loaded: {0} Lines", lines.ToArray().Length);
 				file.Close ();
@@ -41,69 +43,75 @@ namespace Registry
 				
 				
 				// now we execute.
-				while (currentLine < lines.ToArray().Length) {
+				while (currentLine < lines.ToArray ().Length) {
 					//Console.WriteLine("Line: {0}",currentLine);
-					Registry.parseCommand(lines.ToArray()[currentLine]);
+					Registry.parseCommand (lines.ToArray () [currentLine]);
 					currentLine++;
-					Registry.add("CURLINE",""+currentLine);
-					Registry.add("TIME",DateTime.Now + "");
-					Registry.add("SYSTIME",DateTime.Now.Millisecond + "");
+					Registry.add ("CURLINE", "" + currentLine);
+					Registry.add ("TIME", DateTime.Now + "");
+					Registry.add ("SYSTIME", DateTime.Now.Millisecond + "");
 				}
 				
 				// Suspend the screen.
 			} else { // we dont have a file so we will interpret from the command line;
-				Console.WriteLine("REGISTRY Language " + Program.version);
-				Console.WriteLine("COPYRIGHT 2016 Infinite Strike.");
-				while(run){
-					Console.Write(">");
-					Registry.add("TIME",DateTime.Now + "");
-					Registry.add("SYSTIME",DateTime.Now.Millisecond + "");
-					Registry.parseCommand(Console.ReadLine());
+				Console.WriteLine ("REGISTRY Language " + Program.version);
+				Console.WriteLine ("COPYRIGHT 2016 Infinite Strike.");
+				while (run) {
+					Console.Write (">");
+					Registry.add ("TIME", DateTime.Now + "");
+					Registry.add ("SYSTIME", DateTime.Now.Millisecond + "");
+					Registry.parseCommand (Console.ReadLine ());
 				}
 			}
 				
 
 			if (args.Length < 2 || args [1] == "false") {
-				Console.WriteLine("Execution Haulted, Press enter to close: EXIT: " + code);
-				Console.ReadLine();
+				Console.WriteLine ("Execution Haulted, Press enter to close: EXIT: " + code);
+				Console.ReadLine ();
 			}
 
-			Environment.Exit(code);
-		}	
+			Environment.Exit (code);
+		}
 	}
 
-	public class Registry{
-		private static List<RegistryData> storage = new List<RegistryData>();
-		private static List<string> l_list = new List<string>();
+	public class Registry
+	{
+		private static List<RegistryData> storage = new List<RegistryData> ();
+		private static List<string> l_list = new List<string> ();
 
-		public static List<RegistryData> getDataList(){
+		public static List<RegistryData> getDataList ()
+		{
 			return storage;
 		}
-		
-		public static bool lockvar(string key){
+
+		public static bool lockvar (string key)
+		{
 			if (!l_list.Contains (key)) {
-				l_list.Add(key);
+				l_list.Add (key);
 				return true;
 			}
 			return false;
 		}
 
-		public static bool unlockvar(string key){
+		public static bool unlockvar (string key)
+		{
 			if (l_list.Contains (key)) {
-				l_list.Remove(key);
+				l_list.Remove (key);
 				return true;
 			}
 			return false;
 		}
 
-		public static bool isLocked(string key){
+		public static bool isLocked (string key)
+		{
 			if (l_list.Contains (key)) {
 				return true;
 			}
 			return false;
 		}
 
-		public static bool add(string key, string value){
+		public static bool add (string key, string value)
+		{
 			if (!isLocked (key)) {
 				if (exists (key)) {
 					set (key, value);
@@ -117,7 +125,8 @@ namespace Registry
 			}
 		}
 
-		public static string get(string key){
+		public static string get (string key)
+		{
 			if (exists (key)) {
 				return getObject (key).Data;
 			} else {
@@ -125,17 +134,19 @@ namespace Registry
 			}
 		}
 
-		public static bool rem(string key){
-			for (int i = 0; i < storage.ToArray().Length; i++){
-				if (storage.ToArray()[i].Key.Equals(key)) {
-					storage.RemoveAt(i);
+		public static bool rem (string key)
+		{
+			for (int i = 0; i < storage.ToArray ().Length; i++) {
+				if (storage.ToArray () [i].Key.Equals (key)) {
+					storage.RemoveAt (i);
 					return true;
 				}
 			}
 			return false;
 		}
 
-		public static bool set(string key, string value){
+		public static bool set (string key, string value)
+		{
 			if (!isLocked (key)) {
 				if (exists (key)) {
 					getObject (key).Data = value;
@@ -149,247 +160,404 @@ namespace Registry
 			}
 		}
 
-		public static bool exists(string key){
-			for (int i = 0; i < storage.ToArray().Length; i++){
-				if (storage.ToArray()[i].Key.Equals(key)) {
+		public static bool exists (string key)
+		{
+			for (int i = 0; i < storage.ToArray ().Length; i++) {
+				if (storage.ToArray () [i].Key.Equals (key)) {
 					return true;
 				}
 			}
 			return false;
 		}
 
-		public static RegistryData getObject(string key){
-			for (int i = 0; i < storage.ToArray().Length; i++){
-				if (storage.ToArray()[i].Key.Equals(key)) {
-					return storage.ToArray()[i];
+		public static RegistryData getObject (string key)
+		{
+			for (int i = 0; i < storage.ToArray ().Length; i++) {
+				if (storage.ToArray () [i].Key.Equals (key)) {
+					return storage.ToArray () [i];
 				}
 			}
 			return null;
 		}
 
-		public static void parseCommand(string comm){
+		public static void parseCommand (string comm)
+		{
 
 			if (!comm.Contains (":")) {
-				Console.WriteLine("COMPILATION ERROR: No command separator: Line " + Program.line);
+				Console.WriteLine ("COMPILATION ERROR: No command separator: Line " + Program.line);
 				return;
-			};
+			}
+			;
 
-			String[] splited = comm.Split(':');
+			String[] splited = comm.Split (':');
 
-			String command = splited [0].Trim();
-			String[] commandArgs = splited[1].Split(' ');
+			String command = splited [0].Trim ();
+			String[] commandArgs = splited [1].Split (' ');
 
 			Interpreter.interpret (command, commandArgs);
 		}
 	}
 
-	public class RegistryData{
+	public class RegistryData
+	{
 		public string Key;
 		public string Data;
 
-		public RegistryData(string Key, string Data){
+		public RegistryData (string Key, string Data)
+		{
 			this.Key = Key;
 			this.Data = Data;
 		}
 	}
 
-	public class Interpreter{
+	public class Interpreter
+	{
 		public static string[] keywords = {
 			"PRINT", "SET", "GET", "REM",
-			"ADD","##","ARITH","EXIT","READ",
-			"GOTO","ARITH#SIN","ARITH#COS",
-			"ARITH#TAN","ARITH#SQRT","LOCK","UNLOCK",
-			"CLEAR","DUMP","RAND"
+			"ADD", "##", "ARITH", "EXIT", "READ",
+			"GOTO", "ARITH#SIN", "ARITH#COS",
+			"ARITH#TAN", "ARITH#SQRT", "LOCK", "UNLOCK",
+			"CLEAR", "DUMP", "RAND", "BSL", "BSR", "BAND",
+			"BOR", "BXOR", "BNOT", "TOINT", "TOCHAR", "CONCAT"
 		};
 
 		public static string[] constants = {
 			"pi"
 		};
 
-		public static bool isCommand(string command){
-			for(int i = 0; i < keywords.Length; i++){
-				if (command.ToLower().Equals(keywords [i].ToLower())){
+		public static bool isCommand (string command)
+		{
+			for (int i = 0; i < keywords.Length; i++) {
+				if (command.ToLower ().Equals (keywords [i].ToLower ())) {
 					return true;
-				};
+				}
+				;
 			}
 			return false;
 		}
 
-		public static bool isConstant(string command){
-			for(int i = 0; i < constants.Length; i++){
-				if (command.ToLower().Equals(constants[i].ToLower())){
+		public static bool isConstant (string command)
+		{
+			for (int i = 0; i < constants.Length; i++) {
+				if (command.ToLower ().Equals (constants [i].ToLower ())) {
 					return true;
-				};
+				}
+				;
 			}
 			return false;
 		}
 
-		public static void interpret(string command, string[] args){;
-			if(isCommand(command)){
-				if (command.ToLower().Trim().Equals("##")){
+		public static void interpret (string command, string[] args)
+		{
+			;
+			if (isCommand (command)) {
+				if (command.ToLower ().Trim ().Equals ("##")) {
 					// we are a commend
 					return;
 				}
-				if(command.ToLower().Trim().Equals("print")){
+				if (command.ToLower ().Trim ().Equals ("print")) {
 
-					if (args.Length < 1) {Console.WriteLine("COMPILATION ERROR: Not Enough Arguments for PRINT: Line "+ Program.line);}
+					if (args.Length < 1) {
+						Console.WriteLine ("COMPILATION ERROR: Not Enough Arguments for PRINT: Line " + Program.line);
+					}
 
 					//Console.WriteLine (Registry.exists(args[0].Trim()));
 					//Console.WriteLine ("CONSOLE GET " + Registry.get(args[1]).Trim());
 
-					if (Registry.exists(args[1].Trim())) { // PRINT : x
+					if (Registry.exists (args [1].Trim ())) { // PRINT : x
 						
-						Console.WriteLine (Registry.get(args[1]).Trim());
+						Console.WriteLine (Registry.get (args [1]).Trim ());
 
 					} else { // PRINT : This is a test
-						Console.WriteLine(arrayToChars(args));
+						Console.WriteLine (arrayToChars (args));
 					}
 					return;
 				}
-				if (command.ToLower().Trim().Equals("add")){
-					if (args.Length < 2) {Console.WriteLine("COMPILATION ERROR: Not Enough Arguments for ADD: Line "+ Program.line);}
-					bool suc = Registry.add(args[0],args[1]);
+				if (command.ToLower ().Trim ().Equals ("add")) {
+					if (args.Length < 2) {
+						Console.WriteLine ("COMPILATION ERROR: Not Enough Arguments for ADD: Line " + Program.line);
+					}
+					bool suc = Registry.add (args [0], args [1]);
 					if (suc == false) {
-						Console.WriteLine("EXECUTION ERROR: Cannot create VALUE {1} with KEY {0} : Value may be locked: Line " + Program.line,args[1],args[0]);
+						Console.WriteLine ("EXECUTION ERROR: Cannot create VALUE {1} with KEY {0} : Value may be locked: Line " + Program.line, args [1], args [0]);
 					}
 					return;
 				}
-				if (command.ToLower().Trim().Equals("set")){
-					if (args.Length < 2) {Console.WriteLine("COMPILATION ERROR: Not Enough Arguments for SET: Line "+ Program.line);}
-					bool suc = Registry.set(args[1],args[2]);
+				if (command.ToLower ().Trim ().Equals ("set")) {
+					if (args.Length < 2) {
+						Console.WriteLine ("COMPILATION ERROR: Not Enough Arguments for SET: Line " + Program.line);
+					}
+					bool suc = Registry.set (args [1], args [2]);
 					if (suc == false) {
-						Console.WriteLine("EXECUTION ERROR: Cannot set VALUE {1} to KEY {0} : Value may be locked: Line "+ Program.line,args[1],args[0]);
+						Console.WriteLine ("EXECUTION ERROR: Cannot set VALUE {1} to KEY {0} : Value may be locked: Line " + Program.line, args [1], args [0]);
 					}
 					return;
 				}
-				if (command.ToLower().Trim().Equals("rem")){
-					if (args.Length < 1) {Console.WriteLine("COMPILATION ERROR: Not Enough Arguments for REM: Line "+ Program.line);}
-					bool suc = Registry.rem(args[0]);
+				if (command.ToLower ().Trim ().Equals ("rem")) {
+					if (args.Length < 1) {
+						Console.WriteLine ("COMPILATION ERROR: Not Enough Arguments for REM: Line " + Program.line);
+					}
+					bool suc = Registry.rem (args [1]);
 					if (suc == false) {
-						Console.WriteLine("EXECUTION ERROR: Cannot REMOVE {0}: Line "+ Program.line,args[0]);
+						Console.WriteLine ("EXECUTION ERROR: Cannot REMOVE {0}: Line " + Program.line, args [0]);
 					}
 					return;
 				}
-				if (command.ToLower().Trim().Equals("clear")){
-					Console.Clear();
+				if (command.ToLower ().Trim ().Equals ("clear")) {
+					Console.Clear ();
 					return;
 				}
-				if (command.ToLower().Trim().Equals("exit")){
-					if (args.Length == 0) {Console.WriteLine ("EXECUTION ERROR: Cannot invoke exit with no value: Line "+ Program.line); return;}
+				if (command.ToLower ().Trim ().Equals ("exit")) {
+					if (args.Length == 0) {
+						Console.WriteLine ("EXECUTION ERROR: Cannot invoke exit with no value: Line " + Program.line);
+						return;
+					}
 					Program.run = false;
-					try{
-						Program.code = int.Parse(regParse(args[1]));
-					}catch(Exception e){
+					try {
+						Program.code = int.Parse (regParse (args [1]));
+					} catch (Exception e) {
 						Console.WriteLine ("FATAL ERROR: Cannot invoke exit with no value: Line " + Program.line);
 						return;
 					}
 					return;
 				}
-				if (command.ToLower().Trim().Equals("arith")){
-					if (args.Length < 1) {Console.WriteLine("COMPILATION ERROR: Not Enough Arguments for ARITH: Line "+ Program.line);}
-					if (args[2].Contains ("+")) {
-						string[] xpr = args [2].Split('+');
-						Registry.add(args[1],arithmatic(xpr[0],"+",xpr[1]));
+				if (command.ToLower ().Trim ().Equals ("arith")) {
+					if (args.Length < 1) {
+						Console.WriteLine ("COMPILATION ERROR: Not Enough Arguments for ARITH: Line " + Program.line);
+					}
+					if (args [2].Contains ("+")) {
+						string[] xpr = args [2].Split ('+');
+						Registry.add (args [1], arithmatic (xpr [0], "+", xpr [1]));
 						return;
 					}
 					if (args [2].Contains ("-")) {
-						string[] xpr = args [2].Split('-');
-						Registry.add(args[1],arithmatic(xpr[0],"-",xpr[1]));
+						string[] xpr = args [2].Split ('-');
+						Registry.add (args [1], arithmatic (xpr [0], "-", xpr [1]));
 						return;
 					}
 					if (args [2].Contains ("/")) {
-						string[] xpr = args [2].Split('/');
-						Registry.add(args[1],arithmatic(xpr[0],"/",xpr[1]));
+						string[] xpr = args [2].Split ('/');
+						Registry.add (args [1], arithmatic (xpr [0], "/", xpr [1]));
 						return;
 					}
 					if (args [2].Contains ("*")) {
-						string[] xpr = args [2].Split('*');
-						Registry.add(args[1],arithmatic(xpr[0],"*",xpr[1]));
+						string[] xpr = args [2].Split ('*');
+						Registry.add (args [1], arithmatic (xpr [0], "*", xpr [1]));
 						return;
 					}
 					if (args [2].Contains ("%")) {
-						string[] xpr = args [2].Split('%');
-						Registry.add(args[1],arithmatic(xpr[0],"%",xpr[1]));
+						string[] xpr = args [2].Split ('%');
+						Registry.add (args [1], arithmatic (xpr [0], "%", xpr [1]));
 						return;
 					}
 					if (args [2].Contains ("^")) {
-						string[] xpr = args [2].Split('^');
-						Registry.add(args[1],arithmatic(xpr[0],"^",xpr[1]));
+						string[] xpr = args [2].Split ('^');
+						Registry.add (args [1], arithmatic (xpr [0], "^", xpr [1]));
+						return;
+					}
+
+					if (args [2].Contains ("<<")) {
+						char[] leftShift = new char[2];
+						leftShift [0] = '<';
+						leftShift [1] = '<';
+						string[] xpr = args [2].Split (leftShift);
+						Registry.add (args [1], arithmatic (xpr [0], "<<", xpr [1]));
+						return;
+					}
+					if (args [2].Contains (">>")) {
+						char[] leftShift = new char[2];
+						leftShift [0] = '>';
+						leftShift [1] = '>';
+						string[] xpr = args [2].Split (leftShift);
+						Registry.add (args [1], arithmatic (xpr [0], ">>", xpr [1]));
+						return;
+					}
+					if (args [2].Contains ("^^")) {
+						char[] leftShift = new char[2];
+						leftShift [0] = '^';
+						leftShift [1] = '^';
+						string[] xpr = args [2].Split (leftShift);
+						Registry.add (args [1], arithmatic (xpr [0], "^^", xpr [1]));
+						return;
+					}
+					if (args [2].Contains ("||")) {
+						char[] leftShift = new char[2];
+						leftShift [0] = '|';
+						leftShift [1] = '|';
+						string[] xpr = args [2].Split (leftShift);
+						Registry.add (args [1], arithmatic (xpr [0], "||", xpr [1]));
+						return;
+					}
+					if (args [2].Contains ("&&")) {
+						char[] leftShift = new char[2];
+						leftShift [0] = '&';
+						leftShift [1] = '&';
+						string[] xpr = args [2].Split (leftShift);
+						Registry.add (args [1], arithmatic (xpr [0], "&&", xpr [1]));
 						return;
 					}
 				}
 				if (command.ToLower ().Trim ().Equals ("read")) { // READ : var
-					if(args.Length < 1){Console.WriteLine("COMPILATION ERROR: Not Enough Arguments to READ: Line"+ Program.line);}
-					Console.Write(">>");
-					string input = Console.ReadLine();
-					Registry.add(args[1],input);
+					if (args.Length < 1) {
+						Console.WriteLine ("COMPILATION ERROR: Not Enough Arguments to READ: Line" + Program.line);
+					}
+					Console.Write (">>");
+					string input = Console.ReadLine ();
+					Registry.add (args [1], input);
 				}
 				//arith
 				if (command.ToLower ().Trim ().Equals ("arith#sin")) {
-					if (args.Length < 1) {Console.WriteLine("COMPILATION ERROR: Not Enough Arguments for SIN: Line "+ Program.line);}
-					Registry.add(args[1],""+Math.Sin(double.Parse(regParse(args[2]))));
+					if (args.Length < 1) {
+						Console.WriteLine ("COMPILATION ERROR: Not Enough Arguments for SIN: Line " + Program.line);
+					}
+					Registry.add (args [1], "" + Math.Sin (double.Parse (regParse (args [2]))));
 				}
 				if (command.ToLower ().Trim ().Equals ("arith#cos")) {
-					if (args.Length < 1) {Console.WriteLine("COMPILATION ERROR: Not Enough Arguments for COS: Line "+ Program.line);}
-					Registry.add(args[1],""+Math.Cos(double.Parse(regParse(args[2]))));
+					if (args.Length < 1) {
+						Console.WriteLine ("COMPILATION ERROR: Not Enough Arguments for COS: Line " + Program.line);
+					}
+					Registry.add (args [1], "" + Math.Cos (double.Parse (regParse (args [2]))));
 				}
 				if (command.ToLower ().Trim ().Equals ("arith#tan")) {
-					if (args.Length < 1) {Console.WriteLine("COMPILATION ERROR: Not Enough Arguments for TAN: Line "+ Program.line);}
-					Registry.add(args[1],""+Math.Tan(double.Parse(regParse(args[2]))));
+					if (args.Length < 1) {
+						Console.WriteLine ("COMPILATION ERROR: Not Enough Arguments for TAN: Line " + Program.line);
+					}
+					Registry.add (args [1], "" + Math.Tan (double.Parse (regParse (args [2]))));
 				}
 				if (command.ToLower ().Trim ().Equals ("arith#sqrt")) {
-					if (args.Length < 1) {Console.WriteLine("COMPILATION ERROR: Not Enough Arguments for SQRT: Line "+ Program.line);}
-					Registry.add(args[1],""+Math.Sqrt(double.Parse(regParse(args[2]))));
+					if (args.Length < 1) {
+						Console.WriteLine ("COMPILATION ERROR: Not Enough Arguments for SQRT: Line " + Program.line);
+					}
+					Registry.add (args [1], "" + Math.Sqrt (double.Parse (regParse (args [2]))));
 				}
 				if (command.ToLower ().Trim ().Equals ("goto")) {
-					if (args.Length < 1) {Console.WriteLine("COMPILATION ERROR: Not Enough Arguments to GOTO: Line "+ Program.line);}
-					try{
-						Program.currentLine = int.Parse(args[1]) - 1;
+					if (args.Length < 1) {
+						Console.WriteLine ("COMPILATION ERROR: Not Enough Arguments to GOTO: Line " + Program.line);
+					}
+					try {
+						Program.currentLine = int.Parse (args [1]) - 1;
 						//Console.WriteLine(Program.currentLine);
 					} catch (Exception e) {
-						Console.WriteLine("FATAL ERROR: {0} : Line: {1}",e.Message,Program.line);
+						Console.WriteLine ("FATAL ERROR: {0} : Line: {1}", e.Message, Program.line);
 					}
 					
 				}
 				if (command.ToLower ().Trim ().Equals ("lock")) {
 					if (!isConstant (args [1])) {
-						Console.WriteLine("EXECUTION ERROR: Cannot lock a system constant: Line " + Program.line );
+						Console.WriteLine ("EXECUTION ERROR: Cannot lock a system constant: Line " + Program.line);
 					} else {
-						bool suc = Registry.lockvar(args[1]);
+						bool suc = Registry.lockvar (args [1]);
 						if (suc == false) {
-							Console.WriteLine("EXECUTION ERROR: Cannot lock: " + args[1] + ": Line " + Program.line );
+							Console.WriteLine ("EXECUTION ERROR: Cannot lock: " + args [1] + ": Line " + Program.line);
 						}
 					}
 				}
 				if (command.ToLower ().Trim ().Equals ("unlock")) {
 					if (!isConstant (args [1])) {
-						Console.WriteLine("EXECUTION ERROR: Cannot unlock a system constant: Line " + Program.line );
+						Console.WriteLine ("EXECUTION ERROR: Cannot unlock a system constant: Line " + Program.line);
 					} else {
-						bool suc = Registry.unlockvar(args[1]);
+						bool suc = Registry.unlockvar (args [1]);
 						if (suc == false) {
-							Console.WriteLine("EXECUTION ERROR: Cannot unlock: " + args[1] + ": Line " + Program.line );
+							Console.WriteLine ("EXECUTION ERROR: Cannot unlock: " + args [1] + ": Line " + Program.line);
 						}
 					}
 				}
-				if (command.ToLower().Trim().Equals("dump")) {
-					for (int i = 0; i < Registry.getDataList().ToArray().Length; i++) {
-						RegistryData d = Registry.getDataList().ToArray()[i];
-						Console.WriteLine("Variable: {0} Value: {1}",d.Key,d.Data);
+				if (command.ToLower ().Trim ().Equals ("dump")) {
+					for (int i = 0; i < Registry.getDataList ().ToArray ().Length; i++) {
+						RegistryData d = Registry.getDataList ().ToArray () [i];
+						Console.WriteLine ("Variable: {0} Value: {1}", d.Key, d.Data);
 					}
 				}
-				if (command.ToLower().Trim().Equals("rand")) {
+				if (command.ToLower ().Trim ().Equals ("rand")) {
 					if (args.Length < 1) {
-						Console.WriteLine("COMPILATION ERROR: Not Enough Arguments to RAND: Line " + Program.line);
+						Console.WriteLine ("COMPILATION ERROR: Not Enough Arguments to RAND: Line " + Program.line);
 						return;
 					}
-					Registry.add(args[1],new Random().Next()+"");
+					Registry.add (args [1], new Random ().Next () + "");
 				}
-			}else{
-				Console.WriteLine("COMPILATION ERROR: Unknown command {0}: Line "+ Program.line,command);
+
+				if (command.ToLower ().Trim ().Equals ("bsl")) {
+					if (args.Length < 3) {
+						Console.WriteLine ("COMPILATION ERROR: Not Enough Arguments to BSL: Line " + Program.line);
+						return;
+					}
+					Registry.add (args [1], ""+(int.Parse (regParse (args [2])) << int.Parse (regParse (args [3]))));
+				}
+				if (command.ToLower ().Trim ().Equals ("bsr")) {
+					if (args.Length < 3) {
+						Console.WriteLine ("COMPILATION ERROR: Not Enough Arguments to BSL: Line " + Program.line);
+						return;
+					}
+					Registry.add (args [1], ""+(int.Parse (regParse (args [2])) >> int.Parse (regParse (args [3]))));
+				}
+				if (command.ToLower ().Trim ().Equals ("bor")) {
+					if (args.Length < 3) {
+						Console.WriteLine ("COMPILATION ERROR: Not Enough Arguments to BSL: Line " + Program.line);
+						return;
+					}
+					Registry.add (args [1], ""+(int.Parse (regParse (args [2])) | int.Parse (regParse (args [3]))));
+				}
+				if (command.ToLower ().Trim ().Equals ("band")) {
+					if (args.Length < 3) {
+						Console.WriteLine ("COMPILATION ERROR: Not Enough Arguments to BSL: Line " + Program.line);
+						return;
+					}
+					Registry.add (args [1], ""+(int.Parse (regParse (args [2])) & int.Parse (regParse (args [3]))));
+				}
+				if (command.ToLower ().Trim ().Equals ("bxor")) {
+					if (args.Length < 3) {
+						Console.WriteLine ("COMPILATION ERROR: Not Enough Arguments to BSL: Line " + Program.line);
+						return;
+					}
+					Registry.add (args [1], ""+(int.Parse (regParse (args [2])) ^ int.Parse (regParse (args [3]))));
+				}
+				if (command.ToLower ().Trim ().Equals ("bnot")) {
+					if (args.Length < 2) {
+						Console.WriteLine ("COMPILATION ERROR: Not Enough Arguments to BNOT: Line " + Program.line);
+						return;
+					}
+					Registry.add (args [1],""+(~int.Parse(regParse(args[2]))));
+				}
+				// conversion from int to char TOCHAR : var var
+				if (command.ToLower ().Trim ().Equals ("tochar")) {
+					if (args.Length < 2) {
+						Console.WriteLine ("COMPILATION ERROR: Not Enough Arguments to TOCHAR: Line " + Program.line);
+						return;
+					}
+					try{
+						Registry.add (args[1],""+((char) int.Parse(regParse(args[2]))));
+					}catch(Exception e){
+						Console.WriteLine ("FATAL ERROR: {0}: Line " + Program.line,e.Message);
+					}
+				}
+				// conversion from int to char TOCHAR : var var
+				if (command.ToLower ().Trim ().Equals ("toint")) {
+					if (args.Length < 2) {
+							Console.WriteLine ("COMPILATION ERROR: Not Enough Arguments to TOINT: Line " + Program.line);
+							return;
+					}
+					try{
+						Registry.add (args[1],""+((int)(regParse(args[2]).ToCharArray()[0])));
+					}catch(Exception e){
+						Console.WriteLine ("FATAL ERROR: {0}: Line " + Program.line,e.Message);
+					}
+				}
+				if (command.ToLower ().Trim ().Equals ("concat")) {
+					if (args.Length < 3) {
+						Console.WriteLine ("COMPILATION ERROR: Not Enough Arguments to CONCAT: Line " + Program.line);
+						return;
+					}
+					String a = regParse(args[2]);
+					String b = regParse(args[3]);
+					Registry.add(args[1],a+b);
+				}
+			} else {
+				Console.WriteLine ("COMPILATION ERROR: Unknown command {0}: Line " + Program.line, command);
 			}
 		}
 
-		public static string getOperation(string op){
+		public static string getOperation (string op)
+		{
 			if (op.Contains ("+")) {
 				return "+";
 			}
@@ -405,13 +573,29 @@ namespace Registry
 			if (op.Contains ("%")) {
 				return "%";
 			}
-			if (op.Contains("^")) {
+			if (op.Contains ("^")) {
 				return "^";
+			}
+			if (op.Contains (">>")) {
+				return ">>";
+			}
+			if (op.Contains ("<<")) {
+				return "<<";
+			}
+			if (op.Contains ("^^")) {
+				return "^^";
+			}
+			if (op.Contains ("&&")) {
+				return "&&";
+			}
+			if (op.Contains ("||")) {
+				return "||";
 			}
 			return null;
 		}
 
-		public static string regParse(string s){
+		public static string regParse (string s)
+		{
 			if (Registry.exists (s)) {
 				return Registry.get (s);
 			} else {
@@ -419,44 +603,46 @@ namespace Registry
 			}
 		}
 
-		public static string arithmatic(string x, string op, string y){
-			try{
-				string xx = regParse(x);
-				string yy = regParse(y);
+		public static string arithmatic (string x, string op, string y)
+		{
+			try {
+				string xx = regParse (x);
+				string yy = regParse (y);
 
 
 				if (op == "+") {
-					return ""+(Double.Parse(xx) + Double.Parse(yy));
+					return "" + (Double.Parse (xx) + Double.Parse (yy));
 				}
 				if (op == "-") {
-					return ""+(Double.Parse(xx) - Double.Parse(yy));
+					return "" + (Double.Parse (xx) - Double.Parse (yy));
 				}
 				if (op == "*") {
-					return ""+(Double.Parse(xx) * Double.Parse(yy));
+					return "" + (Double.Parse (xx) * Double.Parse (yy));
 				}
 				if (op == "/") {
-					return ""+(Double.Parse(xx) / Double.Parse(yy));
+					return "" + (Double.Parse (xx) / Double.Parse (yy));
 				}
 				if (op == "%") {
-					return ""+(Double.Parse(xx) % Double.Parse(yy));
+					return "" + (Double.Parse (xx) % Double.Parse (yy));
 				}
 				if (op == "^") {
-					return ""+(Math.Pow(Double.Parse(xx),Double.Parse(yy)));
+					return "" + (Math.Pow (Double.Parse (xx), Double.Parse (yy)));
 				}
-				return ""+0;
-			}catch(Exception e){
-				Console.WriteLine("FATAL ERROR: {0} Line: {1}",e.Message,Program.line);
-				return ""+(0);
+				return "" + 0;
+			} catch (Exception e) {
+				Console.WriteLine ("FATAL ERROR: {0} Line: {1}", e.Message, Program.line);
+				return "" + (0);
 			}
 		}
 
-		private static string arrayToChars(string[] args){
+		private static string arrayToChars (string[] args)
+		{
 			String result = "";
 			for (int i = 0; i < args.Length; i++) {
 				result += args [i];
 				result += " ";
 			}
-			return result.Trim();
+			return result.Trim ();
 		}
 	}
 }
